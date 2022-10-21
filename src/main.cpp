@@ -185,7 +185,7 @@ static lv_res_t btn_click_action(lv_obj_t * btn)
 void initialize() {
 
 /*---------------GUI-----------------*/
-/*
+
 	lv_style_copy(&NextButtonReleased, &lv_style_plain);
     NextButtonReleased.body.main_color = LV_COLOR_WHITE;
     NextButtonReleased.body.grad_color = LV_COLOR_WHITE;
@@ -196,7 +196,7 @@ void initialize() {
     NextButtonPressed.body.main_color = LV_COLOR_GRAY;
     NextButtonPressed.body.grad_color =  LV_COLOR_GRAY;
     NextButtonPressed.body.radius = 0;
-  q  NextButtonPressed.text.color = LV_COLOR_BLACK;
+	NextButtonPressed.text.color = LV_COLOR_BLACK;
 
     NextButton = lv_btn_create(lv_scr_act(), NULL); //create button, lv_scr_act() is deafult screen object
     lv_obj_set_free_num(NextButton, 0); //set button is to 0
@@ -208,7 +208,7 @@ void initialize() {
 
     NextButtonLabel = lv_label_create(NextButton, NULL); //create label and puts it inside of the button
     lv_label_set_text(NextButtonLabel, "Switch Page >"); //sets label text
-*/
+
 
 //Auton Page
 	lv_style_copy(&FieldStyle, &lv_style_plain);
