@@ -9,6 +9,8 @@ void Button(lv_obj_t* button, lv_obj_t* Page, int w, int h, int posx, int posy, 
 
 int AutonomousMode = 0; //solo(1) or team(2)
 int AutonStart = 0; //4 places
+bool PageShown = false;
+bool LabelShown = !PageShown;
 int AutonSelectPage = 255; //hidden(0) or shown (255)
 
 /**
@@ -20,12 +22,13 @@ int AutonSelectPage = 255; //hidden(0) or shown (255)
 
 /*---------------GUI------------------*/
 //Next Page
-lv_obj_t * NextButton;
-lv_obj_t * NextButtonLabel;
+lv_obj_t * BackButton;
+lv_obj_t * BackButtonLabel;
 lv_obj_t * myLabel;
 
-lv_style_t NextButtonPressed;
-lv_style_t NextButtonReleased;
+lv_style_t LabelStyle;
+lv_style_t BackButtonPressed;
+lv_style_t BackButtonReleased;
 
 
 
@@ -36,6 +39,8 @@ lv_style_t FieldStyle;
 
 lv_obj_t * AutonSelect = lv_page_create(lv_scr_act(), NULL);
 lv_style_t SelectStyle;
+
+
 
 /*------------Buttons-------------*/
 //Blue1
@@ -63,6 +68,8 @@ lv_obj_t * TeamLabel;
 lv_obj_t * SoloLabel;
 lv_style_t ButtonPressed;
 lv_style_t ButtonReleased;
+
+
 
 /*--------Field----------*/
 
@@ -96,6 +103,8 @@ lv_obj_t * RedZone1;
 lv_obj_t * RedZone2;
 lv_style_t BlueAllianceZones;
 lv_style_t RedAllianceZones;
+
+
 
 
 
@@ -163,52 +172,83 @@ void Button(lv_obj_t* button, lv_obj_t* Page, int w, int h, int posx, int posy, 
 }
 static lv_res_t btn_click_action(lv_obj_t * btn)
 {
-    uint8_t id = lv_obj_get_free_num(btn); //id usefull when there are multiple buttons
-    
-	if(id == 1)
-    {
-        AutonSelectPage = 255;
-    }
-	else if(id ==2){
-		AutonSelectPage = 255;
-	}
-	else if(id ==3){
-		AutonSelectPage = 255;
-	}
-	else if(id ==4){
-		AutonSelectPage = 255;
-	}
 
+    uint8_t id = lv_obj_get_free_num(btn); //id usefull when there are multiple buttons
+	if(id ==0){//bakc button
+		PageShown = false;
+		AutonStart = 0;
+		AutonomousMode = 0;
+	}
+	else if(id == 1)//Blue Team Roller
+    { 
+		PageShown = true;
+		AutonStart = 1;
+		
+    }
+	else if(id ==2){//Red Team No Roller
+
+		PageShown = true;
+		AutonStart = 2;
+	}
+	else if(id ==3){//Blue Team No Roller
+		PageShown = true;
+		AutonStart = 3;
+	}
+	else if(id ==4){//Red Team Roller
+		PageShown = true;
+		AutonStart = 4;
+	}
+	initialize();
 
     return LV_RES_OK;
 }
 void initialize() {
-
+  if(PageShown == true){
+    AutonSelectPage = 255;
+  }
+  else if (PageShown == false) {
+    AutonSelectPage = 0;
+  }
 /*---------------GUI-----------------*/
 
-	lv_style_copy(&NextButtonReleased, &lv_style_plain);
-    NextButtonReleased.body.main_color = LV_COLOR_WHITE;
-    NextButtonReleased.body.grad_color = LV_COLOR_WHITE;
-    NextButtonReleased.body.radius = 0;
-    NextButtonReleased.text.color = LV_COLOR_BLACK;
+	lv_style_copy(&BackButtonReleased, &lv_style_plain);
+    BackButtonReleased.body.main_color = LV_COLOR_WHITE;
+    BackButtonReleased.body.grad_color = LV_COLOR_WHITE;
+    BackButtonReleased.body.radius = 0;
+    BackButtonReleased.text.color = LV_COLOR_BLACK;
+	BackButtonReleased.text.opa = AutonSelectPage;
+	BackButtonReleased.body.opa = AutonSelectPage;
 
-    lv_style_copy(&NextButtonPressed, &lv_style_plain);
-    NextButtonPressed.body.main_color = LV_COLOR_GRAY;
-    NextButtonPressed.body.grad_color =  LV_COLOR_GRAY;
-    NextButtonPressed.body.radius = 0;
-	NextButtonPressed.text.color = LV_COLOR_BLACK;
+    lv_style_copy(&BackButtonPressed, &lv_style_plain);
+    BackButtonPressed.body.main_color = LV_COLOR_GRAY;
+    BackButtonPressed.body.grad_color =  LV_COLOR_GRAY;
+    BackButtonPressed.body.radius = 0;
+	BackButtonPressed.text.color = LV_COLOR_BLACK;
+	BackButtonPressed.text.opa = AutonSelectPage;
+	BackButtonPressed.body.opa = AutonSelectPage;
 
-    NextButton = lv_btn_create(lv_scr_act(), NULL); //create button, lv_scr_act() is deafult screen object
-    lv_obj_set_free_num(NextButton, 0); //set button is to 0
-   // lv_btn_set_action(NextButton, LV_BTN_ACTION_CLICK, btn_click_action); //set function to be called on button click
-    lv_btn_set_style(NextButton, LV_BTN_STYLE_REL, &NextButtonReleased); //set the relesed style
-    lv_btn_set_style(NextButton, LV_BTN_STYLE_PR, &NextButtonPressed); //set the pressed style
-    lv_obj_set_size(NextButton, 160, 40); //set the button size
-    lv_obj_align(NextButton, NULL, LV_ALIGN_IN_TOP_LEFT, 320, 0); //set the position to top mid
+	lv_style_copy(&LabelStyle, &lv_style_plain);
+	LabelStyle.text.color = LV_COLOR_WHITE;
+	LabelStyle.text.opa = AutonSelectPage;
+	//LabelStyle.text.opa = LabelShown;
 
-    NextButtonLabel = lv_label_create(NextButton, NULL); //create label and puts it inside of the button
-    lv_label_set_text(NextButtonLabel, "Switch Page >"); //sets label text
+    BackButton = lv_btn_create(lv_scr_act(), NULL); //create button, lv_scr_act() is deafult screen object
+    lv_obj_set_free_num(BackButton, 0); //set button is to 0
+   // lv_btn_set_action(BackButton, LV_BTN_ACTION_CLICK, btn_click_action); //set function to be called on button click
+    lv_btn_set_style(BackButton, LV_BTN_STYLE_REL, &BackButtonReleased); //set the relesed style
+    lv_btn_set_style(BackButton, LV_BTN_STYLE_PR, &BackButtonPressed); //set the pressed style
+    lv_obj_set_size(BackButton, 80, 40); //set the button size
+    lv_obj_align(BackButton, NULL, LV_ALIGN_IN_TOP_LEFT, 400, 0); //set the position to top mid
+	lv_btn_set_action(BackButton, LV_BTN_ACTION_PR, btn_click_action);
 
+
+    BackButtonLabel = lv_label_create(BackButton, NULL); //create label and puts it inside of the button
+    lv_label_set_text(BackButtonLabel, "X"); //sets label text
+
+	myLabel = lv_label_create(lv_scr_act(), NULL); //create label and puts it on the screen
+    lv_label_set_text(myLabel, "Team or Solo"); //sets label text
+    lv_obj_align(myLabel, NULL, LV_ALIGN_CENTER, -20, 0); //set the position to center
+	lv_label_set_style(myLabel, &LabelStyle);
 
 //Auton Page
 	lv_style_copy(&FieldStyle, &lv_style_plain);
@@ -222,12 +262,12 @@ void initialize() {
 
 //Solo or Team Page
 	lv_style_copy(&SelectStyle, &lv_style_plain);
-	SelectStyle.body.main_color = LV_COLOR_YELLOW;
+	SelectStyle.body.main_color = LV_COLOR_BLACK;
 	SelectStyle.body.radius = 0;
 	SelectStyle.body.border.width = 5;
-	SelectStyle.body.border.color = LV_COLOR_BLACK;
+	SelectStyle.body.border.color = LV_COLOR_WHITE;
 	SelectStyle.body.border.opa = AutonSelectPage;
-	SelectStyle.body.grad_color = LV_COLOR_YELLOW;
+	SelectStyle.body.grad_color = LV_COLOR_BLACK;
 	SelectStyle.body.opa = AutonSelectPage;
 	SelectStyle.text.opa = AutonSelectPage;
 	lv_page_glue_obj(TeamButton, true);
@@ -297,7 +337,7 @@ lv_label_set_style(SoloLabel, &SelectStyle);
     lv_obj_set_size(RedButton, 80, 40); //set the button size
 	lv_obj_align(RedButton, NULL, LV_ALIGN_IN_TOP_LEFT, 160, 0); //set the position to top mid
 	lv_obj_set_free_num(RedButton, 2);
-
+	lv_btn_set_action(RedButton, LV_BTN_ACTION_PR, btn_click_action);
 
 //Blue2
     lv_btn_set_style(BlueButton2, LV_BTN_STYLE_REL, &BlueButtonReleased); //set the relesed style
@@ -305,6 +345,7 @@ lv_label_set_style(SoloLabel, &SelectStyle);
     lv_obj_set_size(BlueButton2, 80, 40); //set the button size
 	lv_obj_align(BlueButton2, NULL, LV_ALIGN_IN_TOP_LEFT, 240, 200); //set the position to top mid
 	lv_obj_set_free_num(BlueButton2, 3);
+	lv_btn_set_action(BlueButton2, LV_BTN_ACTION_PR, btn_click_action);
 //Red2
 
     lv_btn_set_style(RedButton2, LV_BTN_STYLE_REL, &RedButtonReleased); //set the relesed style
@@ -312,7 +353,7 @@ lv_label_set_style(SoloLabel, &SelectStyle);
     lv_obj_set_size(RedButton2, 80, 40); //set the button size
 	lv_obj_align(RedButton2, NULL, LV_ALIGN_IN_TOP_LEFT, 400, 160); //set the position to top mid
 	lv_obj_set_free_num(RedButton2, 4);
-
+	lv_btn_set_action(RedButton2, LV_BTN_ACTION_PR, btn_click_action);
 
 
 
